@@ -1,3 +1,19 @@
+# Dependências
 node_modules/
+
+# Variáveis de ambiente
 .env
-*.log
+.env.local
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos do editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dados do PostgreSQL (se usar volumes locais)
+postgres_data/
