@@ -3,10 +3,10 @@ const { initDatabase, saveTransaction } = require('./config/database');
 
 const consumer = kafka.consumer({ groupId: 'fraud-detection-group' });
 
-// Cache de transações por usuário (últimos 10 minutos)
+//Cache de transações por usuário (últimos 10 minutos)
 const userTransactions = new Map();
 
-// Limpar transações antigas do cache (> 10 minutos)
+//Limpar transações antigas do cache com mais de 10min
 setInterval(() => {
   const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
   
@@ -21,22 +21,22 @@ setInterval(() => {
       userTransactions.set(userId, recentTransactions);
     }
   }
-}, 30000); // Limpa a cada 30 segundos
+}, 30000); //Limpa a cada 30 segundos
 
-// Regras de detecção de fraude
+//Regras de detecção de fraude
 function detectFraud(transaction) {
   const reasons = [];
   const userId = transaction.userId;
 
-  // REGRA 1: ALTO_VALOR - Transação >= R$ 10.000
+  //ALTO_VALOR - Transação >= R$ 10.000
   if (transaction.amount >= 10000) {
     reasons.push('ALTO_VALOR');
   }
 
-  // Obter transações anteriores do usuário
+  //Obter transações anteriores do usuário
   const userHistory = userTransactions.get(userId) || [];
   
-  // REGRA 2: TEMPO_60s - 4 transações em menos de 60 segundos
+  //TEMPO_60s - 4 transações em menos de 60 segundos
   const sixtySecondsAgo = Date.now() - 60 * 1000;
   const recentTransactions = userHistory.filter(t => 
     new Date(t.timestamp).getTime() > sixtySecondsAgo
@@ -46,7 +46,7 @@ function detectFraud(transaction) {
     reasons.push('TEMPO_60s');
   }
 
-  // REGRA 3: GEO_10m - 2 transações em cidades diferentes em 10 minutos
+  //GEO_10m - 2 transações em cidades diferentes em 10 minutos
   const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
   const last10MinTransactions = userHistory.filter(t => 
     new Date(t.timestamp).getTime() > tenMinutesAgo
@@ -59,7 +59,7 @@ function detectFraud(transaction) {
     reasons.push('GEO_10m');
   }
 
-  // Adicionar transação atual ao histórico
+  //Adicionar transação atual ao histórico
   userHistory.push(transaction);
   userTransactions.set(userId, userHistory);
 
@@ -69,12 +69,12 @@ function detectFraud(transaction) {
   };
 }
 
-// Função principal
+//Função principal
 async function run() {
-  // Inicializar banco de dados
+  //Inicializar banco de dados
   await initDatabase();
 
-  // Conectar ao Kafka
+  //Conectar ao Kafka
   await consumer.connect();
   await consumer.subscribe({ topic: 'transactions', fromBeginning: false });
 
@@ -90,12 +90,12 @@ async function run() {
       const transaction = JSON.parse(message.value.toString());
       const fraudCheck = detectFraud(transaction);
 
-      // Salvar no banco
+      //Salvar no banco
       await saveTransaction(transaction, fraudCheck.isFraud);
 
-      // Exibir no console
+      //Exibir no console
       if (fraudCheck.isFraud) {
-        console.log('🚨 =============== ALERTA DE FRAUDE =============== 🚨');
+        console.log('=============== ALERTA DE FRAUDE ===============');
         console.log('Transação ID:', transaction.transactionId);
         console.log('Usuário:', transaction.userId);
         console.log('Valor: R$', transaction.amount.toFixed(2));
