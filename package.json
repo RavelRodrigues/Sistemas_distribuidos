@@ -1,23 +1,15 @@
 {
-  "name": "kafka-fraud-detection",
+  "name": "kafka-projetosd",
   "version": "1.0.0",
-  "description": "Sistema que simula transações financeiras e detecta possíveis fraudes em tempo real usando Apache Kafka.",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/RavelRodrigues/Sistemas_distribuidos.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/RavelRodrigues/Sistemas_distribuidos/issues"
-  },
-  "homepage": "https://github.com/RavelRodrigues/Sistemas_distribuidos#readme",
   "dependencies": {
     "kafkajs": "^2.2.4",
     "pg": "^8.16.3"
